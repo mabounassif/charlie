@@ -1,0 +1,45 @@
+# Chess Opening Recommendation System Configuration
+
+# Engine Settings
+engine:
+  stockfish_path: "/usr/local/bin/stockfish"  # Update this path
+  evaluation_depth: 15
+  time_limit: 1.0  # seconds per evaluation
+
+# Maia Model Settings
+maia:
+  model_path: "models/maia-1100.pth"  # Will be downloaded
+  device: "cuda"  # or "cpu"
+  batch_size: 32
+
+# Mistake Classification Thresholds
+mistake_thresholds:
+  blunder: -200  # centipawns
+  mistake: -100
+  inaccuracy: -50
+  ok: 0
+
+# Analysis Settings
+analysis:
+  max_games: 1000  # Limit for processing
+  min_moves: 10    # Minimum moves per game
+  max_moves: 200   # Maximum moves per game
+
+# Output Settings
+output:
+  save_processed_data: true
+  generate_heatmaps: true
+  save_recommendations: true
+  output_dir: "data/processed"
+
+# Visualization Settings
+visualization:
+  figure_size: [12, 8]
+  color_scheme: "viridis"
+  save_format: "png"
+
+# Recommendation Settings
+recommendation:
+  top_openings: 10
+  min_games_per_opening: 3
+  confidence_threshold: 0.7 

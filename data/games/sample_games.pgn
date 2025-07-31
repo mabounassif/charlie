@@ -1,0 +1,35 @@
+[Event "Sample Game 1"]
+[Site "Chess.com"]
+[Date "2024.01.15"]
+[Round "1"]
+[White "Player1"]
+[Black "Player2"]
+[Result "1-0"]
+[ECO "C50"]
+[Opening "Giuoco Piano"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d3 d6 6. O-O O-O 7. Nbd2 a6 8. Bb3 Be6 9. Re1 Qd7 10. Nf1 Bxb3 11. axb3 Qc8 12. Ng3 h6 13. h3 Kh7 14. Nh2 Nh5 15. Nf3 Nf4 16. Bxf4 exf4 17. Qd2 Qe6 18. Rad1 Rad8 19. Qe2 Qf6 20. Nh4 Qg6 21. Nf3 Qf6 22. Nh4 Qg6 23. Nf3 Qf6 1/2-1/2
+
+[Event "Sample Game 2"]
+[Site "Lichess.org"]
+[Date "2024.01.16"]
+[Round "1"]
+[White "Player3"]
+[Black "Player4"]
+[Result "0-1"]
+[ECO "B20"]
+[Opening "Sicilian Defense"]
+
+1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 6. Be3 e5 7. Nb3 Be6 8. f3 Be7 9. Qd2 O-O 10. O-O-O Nbd7 11. g4 b5 12. g5 Nh5 13. Nd5 Bxd5 14. exd5 Qc7 15. h4 Rfc8 16. h5 Nf4 17. Bxf4 exf4 18. h6 g6 19. Qd3 Qc4 20. Qxc4 bxc4 21. Nc5 dxc5 22. dxc6 Nxc6 23. Rd7 Bf8 24. Rxc7 Rxc7 25. Rd1 Rc8 26. Rd7 Rc7 27. Rd1 Rc8 28. Rd7 Rc7 29. Rd1 Rc8 30. Rd7 Rc7 1/2-1/2
+
+[Event "Sample Game 3"]
+[Site "Chess.com"]
+[Date "2024.01.17"]
+[Round "1"]
+[White "Player5"]
+[Black "Player6"]
+[Result "1-0"]
+[ECO "D00"]
+[Opening "Queen's Pawn Game"]
+
+1. d4 d5 2. c4 dxc4 3. e3 e6 4. Bxc4 Nf6 5. Nf3 c5 6. O-O a6 7. Bb3 Nc6 8. Nc3 Be7 9. dxc5 Bxc5 10. Qe2 O-O 11. Rd1 Qe7 12. Bg5 h6 13. Bh4 g5 14. Bg3 Nh5 15. Bc2 Nxg3 16. hxg3 Bd6 17. Ne4 Be7 18. Nc5 Qd8 19. Qe4 f5 20. Qe2 Qc7 21. Rac1 Rac8 22. b4 a5 23. b5 Nb4 24. Bb3 Nc2 25. Rxc2 Qxc2 26. Qxc2 Rxc2 27. Bxc2 Rc8 28. Bb3 Rc3 29. Bd1 Rc8 30. Bb3 Rc3 1/2-1/2 

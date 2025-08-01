@@ -1,5 +1,10 @@
 # Chess Opening Recommendation System Configuration
 
+# API Settings
+api:
+  max_workers: 4  # Number of process pool workers (adjust based on CPU cores)
+  job_timeout: 1800  # Job timeout in seconds (30 minutes)
+
 # Engine Settings
 engine:
   stockfish_path: "/usr/games/stockfish"  # Update this path

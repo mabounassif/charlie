@@ -2,9 +2,10 @@
 Basic tests for the chess opening recommendation system.
 """
 
+from pathlib import Path
+
 import pytest
 import yaml
-from pathlib import Path
 
 # Import our components
 from src.core.pgn_parser import PGNParser, Game, GameMove

@@ -6,6 +6,7 @@ Identifies chess openings from move sequences using ECO codes.
 from typing import Dict, List, Any
 import logging
 from collections import defaultdict
+import chess
 
 logger = logging.getLogger(__name__)
 
@@ -82,8 +83,6 @@ class OpeningClassifier:
 
         # Convert UCI moves to SAN for matching
         try:
-            import chess
-
             board = chess.Board()
             san_moves: List[str] = []
 

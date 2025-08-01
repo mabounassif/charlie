@@ -36,4 +36,4 @@ USER appuser
 EXPOSE 8000
 
 # Set the default command to run the web application for Railway
-CMD ["python3", "run_api.py"] 
+CMD ["python3", "/app/run_api.py"] 

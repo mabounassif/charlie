@@ -3,7 +3,7 @@ Recommendation engine for chess opening study.
 Generates personalized recommendations based on mistake analysis.
 """
 
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
 import logging
 from collections import defaultdict
 
@@ -13,13 +13,13 @@ logger = logging.getLogger(__name__)
 class RecommendationEngine:
     """Generates personalized opening study recommendations."""
     
-    def __init__(self, config: Dict):
+    def __init__(self, config: Dict[str, Any]) -> None:
         self.config = config
         self.top_openings = config['recommendation']['top_openings']
         self.min_games_per_opening = config['recommendation']['min_games_per_opening']
         self.confidence_threshold = config['recommendation']['confidence_threshold']
     
-    def generate_recommendations(self, opening_mistake_stats: Dict) -> List[Dict]:
+    def generate_recommendations(self, opening_mistake_stats: Dict[str, Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Generate opening study recommendations based on mistake statistics.
         
@@ -29,7 +29,7 @@ class RecommendationEngine:
         Returns:
             List of recommendation dictionaries
         """
-        recommendations = []
+        recommendations: List[Dict[str, Any]] = []
         
         for opening, stats in opening_mistake_stats.items():
             # Skip openings with too few games
@@ -60,7 +60,7 @@ class RecommendationEngine:
         # Return top recommendations
         return recommendations[:self.top_openings]
     
-    def _calculate_priority_score(self, stats: Dict) -> float:
+    def _calculate_priority_score(self, stats: Dict[str, Any]) -> float:
         """
         Calculate priority score for an opening based on mistake rates.
         Higher score = higher priority for study.
@@ -81,7 +81,7 @@ class RecommendationEngine:
         
         return weighted_score * (1.0 + confidence_boost)
     
-    def _get_recommendation_type(self, stats: Dict) -> str:
+    def _get_recommendation_type(self, stats: Dict[str, Any]) -> str:
         """Determine the type of recommendation based on mistake patterns."""
         blunder_rate = stats.get('blunder_rate', 0.0)
         mistake_rate = stats.get('mistake_rate', 0.0)
@@ -96,9 +96,9 @@ class RecommendationEngine:
         else:
             return "minor_improvement"
     
-    def _get_study_focus(self, stats: Dict) -> List[str]:
+    def _get_study_focus(self, stats: Dict[str, Any]) -> List[str]:
         """Determine what aspects to focus on when studying this opening."""
-        focus_areas = []
+        focus_areas: List[str] = []
         
         blunder_rate = stats.get('blunder_rate', 0.0)
         mistake_rate = stats.get('mistake_rate', 0.0)
@@ -121,7 +121,7 @@ class RecommendationEngine:
         
         return focus_areas
     
-    def _calculate_confidence(self, stats: Dict) -> float:
+    def _calculate_confidence(self, stats: Dict[str, Any]) -> float:
         """Calculate confidence level for the recommendation."""
         total_moves = stats.get('total_moves', 0)
         
@@ -130,7 +130,7 @@ class RecommendationEngine:
         
         return confidence
     
-    def generate_study_plan(self, recommendations: List[Dict]) -> Dict:
+    def generate_study_plan(self, recommendations: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Generate a comprehensive study plan from recommendations.
         
@@ -140,7 +140,7 @@ class RecommendationEngine:
         Returns:
             Dictionary with study plan
         """
-        study_plan: Dict = {
+        study_plan: Dict[str, Any] = {
             'total_recommendations': len(recommendations),
             'priority_openings': [],
             'study_schedule': {},
@@ -184,7 +184,7 @@ class RecommendationEngine:
         
         return study_plan
     
-    def format_recommendations(self, recommendations: List[Dict]) -> str:
+    def format_recommendations(self, recommendations: List[Dict[str, Any]]) -> str:
         """
         Format recommendations as a human-readable string.
         

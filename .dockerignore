@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+env/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Data files (can be mounted at runtime)
+data/
+models/
+
+# Documentation
+README.md
+PROJECT_SUMMARY.md
+
+# Development files
+.mypy_cache/
+tests/
+notebooks/
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml 

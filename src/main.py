@@ -9,7 +9,7 @@ import logging
 import yaml
 import json
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Any
 
 # Import our components
 from core.pgn_parser import PGNParser
@@ -31,14 +31,14 @@ def setup_logging(level: str = "INFO") -> None:
     )
 
 
-def load_config(config_path: str) -> Dict:
+def load_config(config_path: str) -> Dict[str, Any]:
     """Load configuration from YAML file."""
     with open(config_path, 'r') as f:
         config = yaml.safe_load(f)
     return config
 
 
-def analyze_games(pgn_path: str, config: Dict) -> Dict:
+def analyze_games(pgn_path: str, config: Dict[str, Any]) -> Dict[str, Any]:
     """
     Run the complete analysis pipeline.
     
@@ -50,7 +50,7 @@ def analyze_games(pgn_path: str, config: Dict) -> Dict:
         Dictionary with analysis results
     """
     logger = logging.getLogger(__name__)
-    results = {}
+    results: Dict[str, Any] = {}
     
     try:
         # Step 1: Parse PGN file
@@ -64,7 +64,7 @@ def analyze_games(pgn_path: str, config: Dict) -> Dict:
         logger.info("Step 2: Evaluating positions with Stockfish...")
         with StockfishEvaluator(config) as evaluator:
             # Convert games to moves for evaluation
-            all_moves = []
+            all_moves: List[Dict[str, Any]] = []
             for game in games:
                 for move in game.moves:
                     move_dict = {
@@ -93,7 +93,7 @@ def analyze_games(pgn_path: str, config: Dict) -> Dict:
         opening_classifier = OpeningClassifier(config)
         
         # Group moves by game for opening classification
-        games_data = []
+        games_data: List[Dict[str, Any]] = []
         for game in games:
             game_moves = [move.move_uci for move in game.moves]
             game_data = {
@@ -113,7 +113,7 @@ def analyze_games(pgn_path: str, config: Dict) -> Dict:
         recommendation_engine = RecommendationEngine(config)
         
         # Combine opening and mistake data
-        opening_mistake_stats = {}
+        opening_mistake_stats: Dict[str, Dict[str, Any]] = {}
         for move in classified_moves:
             game_id = move['game_id']
             opening = "Unknown Opening"  # Default
@@ -143,10 +143,10 @@ def analyze_games(pgn_path: str, config: Dict) -> Dict:
         for opening, stats in opening_mistake_stats.items():
             total = stats['total_moves']
             if total > 0:
-                stats['blunder_rate'] = stats['blunders'] / total
-                stats['mistake_rate'] = stats['mistakes'] / total
-                stats['inaccuracy_rate'] = stats['inaccuracies'] / total
-                stats['good_move_rate'] = stats['good_moves'] / total
+                stats['blunder_rate'] = float(stats['blunders']) / total
+                stats['mistake_rate'] = float(stats['mistakes']) / total
+                stats['inaccuracy_rate'] = float(stats['inaccuracies']) / total
+                stats['good_move_rate'] = float(stats['good_moves']) / total
         
         # Generate recommendations
         recommendations = recommendation_engine.generate_recommendations(opening_mistake_stats)
@@ -165,7 +165,7 @@ def analyze_games(pgn_path: str, config: Dict) -> Dict:
         raise
 
 
-def save_results(results: Dict, output_dir: str) -> None:
+def save_results(results: Dict[str, Any], output_dir: str) -> None:
     """Save analysis results to files."""
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -185,7 +185,7 @@ def save_results(results: Dict, output_dir: str) -> None:
     print(f"Results saved to {output_path}")
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     parser = argparse.ArgumentParser(description="Chess Opening Recommendation System")
     parser.add_argument("--pgn-file", required=True, help="Path to PGN file")

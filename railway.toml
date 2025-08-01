@@ -1,0 +1,11 @@
+[build]
+builder = "dockerfile"
+
+[deploy]
+startCommand = "python3 src/web_app.py"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+
+[env]
+PYTHONUNBUFFERED = "1" 

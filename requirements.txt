@@ -1,6 +1,6 @@
 # Core chess libraries
 python-chess>=1.10.0
-chess-openings>=0.1.0
+chess>=1.11.2
 
 # Machine learning and data processing
 torch>=2.0.0
@@ -29,6 +29,10 @@ pytest-cov>=4.1.0
 black>=23.7.0
 flake8>=6.0.0
 mypy>=1.5.0
+
+# Web framework for Railway deployment
+flask>=2.3.0
+werkzeug>=2.3.0
 
 # Optional: RL libraries for future phases
 # gym>=0.26.0

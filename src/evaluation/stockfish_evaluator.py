@@ -8,6 +8,7 @@ import chess.engine
 from typing import Dict, Optional, Tuple, List, Any
 import logging
 from pathlib import Path
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -144,7 +145,7 @@ class StockfishEvaluator:
         """
         evaluated_moves: List[Dict[str, Any]] = []
 
-        for move_data in moves_data:
+        for move_data in tqdm(moves_data):
             try:
                 board = chess.Board(move_data["fen_before"])
                 move = chess.Move.from_uci(move_data["move_uci"])

@@ -14,10 +14,13 @@ maia:
 
 # Mistake Classification Thresholds
 mistake_thresholds:
-  blunder: -200  # centipawns
+  blunder: -200  # centipawns (magnitude of change)
   mistake: -100
   inaccuracy: -50
   ok: 0
+  good_move: 50
+  great_move: 100
+  brilliant_move: 200
 
 # Analysis Settings
 analysis:

@@ -129,17 +129,21 @@ def analyze_games(pgn_path: str, config: Dict[str, Any]) -> Dict[str, Any]:
             if opening not in opening_mistake_stats:
                 opening_mistake_stats[opening] = {
                     'total_moves': 0,
-                    'blunders': 0,
-                    'mistakes': 0,
-                    'inaccuracies': 0,
-                    'good_moves': 0,
-                    'unknown': 0
+                    "blunders": 0,
+                    "mistakes": 0,
+                    "inaccuracies": 0,
+                    "goods": 0,
+                    "greats": 0,
+                    "brilliants": 0,
+                    "oks": 0,
+                    "unknowns": 0,
                 }
 
             opening_mistake_stats[opening]['total_moves'] += 1
             mistake_type = move.get('mistake_type', 'unknown')
-            if mistake_type in opening_mistake_stats[opening]:
-                opening_mistake_stats[opening][mistake_type] += 1
+            stats_key = "inaccuracies" if mistake_type == "inaccuracy" else f"{mistake_type}s"
+            if stats_key in opening_mistake_stats[opening]:
+                opening_mistake_stats[opening][stats_key] += 1
 
         # Calculate rates for each opening
         for opening, stats in opening_mistake_stats.items():
@@ -148,7 +152,10 @@ def analyze_games(pgn_path: str, config: Dict[str, Any]) -> Dict[str, Any]:
                 stats['blunder_rate'] = float(stats['blunders']) / total
                 stats['mistake_rate'] = float(stats['mistakes']) / total
                 stats['inaccuracy_rate'] = float(stats['inaccuracies']) / total
-                stats['good_move_rate'] = float(stats['good_moves']) / total
+                stats['good_rate'] = float(stats['goods']) / total
+                stats['great_rate'] = float(stats['greats']) / total
+                stats['brilliant_rate'] = float(stats['brilliants']) / total
+                stats['ok_rate'] = float(stats['oks']) / total
 
         # Generate recommendations
         recommendations = recommendation_engine.generate_recommendations(
@@ -186,7 +193,7 @@ def save_results(results: Dict[str, Any], output_dir: str, config: Dict[str, Any
         with open(output_path / 'recommendations.txt', 'w', encoding='utf-8') as f:
             f.write(formatted_recs)
 
-    print("Results saved to %s", output_path)
+    print(f"Results saved to {output_path}")
 
 
 def main() -> None:
@@ -220,16 +227,16 @@ def main() -> None:
     print("\n" + "="*50)
     print("ANALYSIS COMPLETE")
     print("="*50)
-    print("Games analyzed: %s", results['games_parsed'])
-    print("Moves evaluated: %s", results['moves_evaluated'])
-    print("Recommendations generated: %s", len(results['recommendations']))
+    print(f"Games analyzed: {results['games_parsed']}")
+    print(f"Moves evaluated: {results['moves_evaluated']}")
+    print(f"Recommendations generated: {len(results['recommendations'])}")
 
     if 'study_plan' in results:
         plan = results['study_plan']
-        print("Estimated study time: %s hours", plan['estimated_time'])
-        print("Focus areas: %s", ', '.join(plan['focus_areas']))
+        print(f"Estimated study time: {plan['estimated_time']} hours")
+        print(f"Focus areas: {', '.join(plan['focus_areas'])}")
 
-    print("\nResults saved to: %s", args.output_dir)
+    print(f"\nResults saved to: {args.output_dir}")
     print("Check recommendations.txt for detailed recommendations")
 
 

@@ -17,16 +17,11 @@ from enum import Enum
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile, BackgroundTasks
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 import yaml
 
 # Import our components
-from src.core.pgn_parser import PGNParser
-from src.evaluation.stockfish_evaluator import StockfishEvaluator
-from src.classification.mistake_classifier import MistakeClassifier
-from src.classification.opening_classifier import OpeningClassifier
-from src.recommendation.recommendation_engine import RecommendationEngine
+from src.analyzer import analyze_games
 
 # Load configuration
 with open('config.yaml', 'r', encoding='utf-8') as f:
@@ -156,92 +151,6 @@ async def shutdown_event():
     process_pool.shutdown(wait=True)
     logger.info("Process pool executor shut down")
 
-def analyze_games_from_file(pgn_file_path: str) -> Dict[str, Any]:
-    """
-    Run the complete analysis pipeline on a PGN file.
-
-    Args:
-        pgn_file_path: Path to PGN file
-
-    Returns:
-        Dictionary with analysis results
-    """
-    results: Dict[str, Any] = {}
-
-    try:
-        # Step 1: Parse PGN file
-        logger.info("Step 1: Parsing PGN file...")
-        parser = PGNParser(config)
-        games = parser.parse_pgn_file(pgn_file_path)
-        results['games_parsed'] = len(games)
-        logger.info("Parsed %s games", len(games))
-
-        if len(games) == 0:
-            return {"error": "No games found in PGN file"}
-
-        # Step 2: Evaluate positions with Stockfish
-        logger.info("Step 2: Evaluating positions with Stockfish...")
-        with StockfishEvaluator(config) as evaluator:
-            # Convert games to moves for evaluation
-            all_moves = []
-            for game in games:
-                for move in game.moves:
-                    move_dict = {
-                        'game_id': move.game_id,
-                        'fen_before': move.fen_before,
-                        'move_uci': move.move_uci,
-                        'player': move.player
-                    }
-                    all_moves.append(move_dict)
-
-            # Evaluate all moves
-            evaluated_moves = evaluator.evaluate_game_moves(all_moves)
-            results['moves_evaluated'] = len(evaluated_moves)
-            logger.info("Evaluated %s moves", len(evaluated_moves))
-
-        # Step 3: Classify mistakes
-        logger.info("Step 3: Classifying mistakes...")
-        mistake_classifier = MistakeClassifier(config)
-        classified_moves = mistake_classifier.classify_moves_batch(
-            evaluated_moves)
-        mistake_stats = mistake_classifier.get_mistake_stats(classified_moves)
-        results['mistake_stats'] = mistake_stats
-        logger.info("Mistake classification complete")
-
-        # Step 4: Classify openings
-        logger.info("Step 4: Classifying openings...")
-        opening_classifier = OpeningClassifier(config)
-
-        # Group moves by game for opening classification
-        games_data = []
-        for game in games:
-            game_moves = [move.move_uci for move in game.moves]
-            game_data = {
-                'game_id': game.game_id,
-                'moves': game_moves,
-                'result': game.result
-            }
-            games_data.append(game_data)
-
-        opening_results = opening_classifier.classify_game_openings(games_data)
-        results['opening_analysis'] = opening_results
-        logger.info("Opening classification complete")
-
-        # Step 5: Generate recommendations
-        logger.info("Step 5: Generating recommendations...")
-        recommendation_engine = RecommendationEngine(config)
-        recommendations = recommendation_engine.generate_recommendations(
-            classified_moves, opening_results, mistake_stats
-        )
-        results['recommendations'] = recommendations
-        logger.info("Recommendations generated")
-
-        return results
-
-    except Exception as e:
-        logger.error("Error during analysis: %s", str(e))
-        return {"error": "Analysis failed: %s" % str(e)}
-
 def run_analysis_in_process(job_id: str, pgn_file_path: str, config_path: str) -> Dict[str, Any]:
     """
     Standalone function to run analysis in a separate process.
@@ -260,8 +169,8 @@ def run_analysis_in_process(job_id: str, pgn_file_path: str, config_path: str) -
         with open(config_path, 'r', encoding='utf-8') as f:
             worker_config = yaml.safe_load(f)
         
-        # Run the analysis
-        results = analyze_games_from_file(pgn_file_path)
+        # Run the analysis using the analyzer module
+        results = analyze_games(pgn_file_path, worker_config)
         
         # Return results with job metadata
         return {

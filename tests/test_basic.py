@@ -16,7 +16,7 @@ def load_test_config():
     """Load test configuration."""
     config_path = Path("config.yaml")
     if config_path.exists():
-        with open(config_path, 'r') as f:
+        with open(config_path, 'r', encoding='utf-8') as f:
             return yaml.safe_load(f)
     else:
         # Default test config
@@ -44,7 +44,7 @@ def test_pgn_parser():
     """Test PGN parser functionality."""
     config = load_test_config()
     parser = PGNParser(config)
-    
+
     # Test with empty games list
     games = []
     df = parser.games_to_dataframe(games)
@@ -55,14 +55,14 @@ def test_mistake_classifier():
     """Test mistake classifier functionality."""
     config = load_test_config()
     classifier = MistakeClassifier(config)
-    
+
     # Test move classification
     mistake_type = classifier.classify_move(100, 50)  # -50 centipawns
     assert mistake_type == 'inaccuracy'
-    
+
     mistake_type = classifier.classify_move(100, -50)  # -150 centipawns
     assert mistake_type == 'mistake'
-    
+
     mistake_type = classifier.classify_move(100, -250)  # -350 centipawns
     assert mistake_type == 'blunder'
 
@@ -71,11 +71,11 @@ def test_recommendation_engine():
     """Test recommendation engine functionality."""
     config = load_test_config()
     engine = RecommendationEngine(config)
-    
+
     # Test with empty stats
     recommendations = engine.generate_recommendations({})
     assert len(recommendations) == 0
-    
+
     # Test with sample stats
     sample_stats = {
         'Sicilian Defense': {
@@ -86,7 +86,7 @@ def test_recommendation_engine():
             'good_move_rate': 0.4
         }
     }
-    
+
     recommendations = engine.generate_recommendations(sample_stats)
     assert len(recommendations) > 0
 
@@ -99,7 +99,7 @@ def test_game_dataclass():
         black_player="Player2",
         result="1-0"
     )
-    
+
     assert game.game_id == "test_game"
     assert game.white_player == "Player1"
     assert game.black_player == "Player2"
@@ -113,12 +113,16 @@ def test_game_move_dataclass():
         game_id="test_game",
         move_number=1,
         player="white",
-        fen_before="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-        fen_after="rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+        fen_before=(
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        ),
+        fen_after=(
+            "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
+        ),
         move_uci="e2e4",
         move_san="e4"
     )
-    
+
     assert move.game_id == "test_game"
     assert move.move_number == 1
     assert move.player == "white"
@@ -127,4 +131,4 @@ def test_game_move_dataclass():
 
 
 if __name__ == "__main__":
-    pytest.main([__file__]) 
+    pytest.main([__file__])

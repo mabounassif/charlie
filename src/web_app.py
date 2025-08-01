@@ -4,25 +4,25 @@ Web application for the Chess Opening Recommendation System.
 Provides a simple web interface for uploading and analyzing PGN files.
 """
 
-import os
 import logging
+import os
 import tempfile
-from pathlib import Path
-from typing import Dict, Any
-from flask import Flask, request, jsonify, render_template_string
-from werkzeug.utils import secure_filename
+from typing import Any, Dict
+
+from flask import Flask, jsonify, render_template_string, request
+
 
 # Import our components
-from core.pgn_parser import PGNParser
-from evaluation.stockfish_evaluator import StockfishEvaluator
-from classification.mistake_classifier import MistakeClassifier
-from classification.opening_classifier import OpeningClassifier
-from recommendation.recommendation_engine import RecommendationEngine
+from src.core.pgn_parser import PGNParser
+from src.evaluation.stockfish_evaluator import StockfishEvaluator
+from src.classification.mistake_classifier import MistakeClassifier
+from src.classification.opening_classifier import OpeningClassifier
+from src.recommendation.recommendation_engine import RecommendationEngine
 
 # Load configuration
 import yaml
-with open('config.yaml', 'r') as f:
-    config = yaml.safe_load(f)
+with open('config.yaml', 'r', encoding='utf-8') as f:
+    config: Dict[str, Any] = yaml.safe_load(f)
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -75,29 +75,30 @@ HTML_TEMPLATE = """
 </html>
 """
 
+
 def analyze_games_from_file(pgn_file_path: str) -> Dict[str, Any]:
     """
     Run the complete analysis pipeline on a PGN file.
-    
+
     Args:
         pgn_file_path: Path to PGN file
-        
+
     Returns:
         Dictionary with analysis results
     """
     results: Dict[str, Any] = {}
-    
+
     try:
         # Step 1: Parse PGN file
         logger.info("Step 1: Parsing PGN file...")
         parser = PGNParser(config)
         games = parser.parse_pgn_file(pgn_file_path)
         results['games_parsed'] = len(games)
-        logger.info(f"Parsed {len(games)} games")
-        
+        logger.info("Parsed %s games", len(games))
+
         if len(games) == 0:
             return {"error": "No games found in PGN file"}
-        
+
         # Step 2: Evaluate positions with Stockfish
         logger.info("Step 2: Evaluating positions with Stockfish...")
         with StockfishEvaluator(config) as evaluator:
@@ -112,24 +113,25 @@ def analyze_games_from_file(pgn_file_path: str) -> Dict[str, Any]:
                         'player': move.player
                     }
                     all_moves.append(move_dict)
-            
+
             # Evaluate all moves
             evaluated_moves = evaluator.evaluate_game_moves(all_moves)
             results['moves_evaluated'] = len(evaluated_moves)
-            logger.info(f"Evaluated {len(evaluated_moves)} moves")
-        
+            logger.info("Evaluated %s moves", len(evaluated_moves))
+
         # Step 3: Classify mistakes
         logger.info("Step 3: Classifying mistakes...")
         mistake_classifier = MistakeClassifier(config)
-        classified_moves = mistake_classifier.classify_moves_batch(evaluated_moves)
+        classified_moves = mistake_classifier.classify_moves_batch(
+            evaluated_moves)
         mistake_stats = mistake_classifier.get_mistake_stats(classified_moves)
         results['mistake_stats'] = mistake_stats
-        logger.info(f"Mistake classification complete")
-        
+        logger.info("Mistake classification complete")
+
         # Step 4: Classify openings
         logger.info("Step 4: Classifying openings...")
         opening_classifier = OpeningClassifier(config)
-        
+
         # Group moves by game for opening classification
         games_data = []
         for game in games:
@@ -140,11 +142,11 @@ def analyze_games_from_file(pgn_file_path: str) -> Dict[str, Any]:
                 'result': game.result
             }
             games_data.append(game_data)
-        
+
         opening_results = opening_classifier.classify_games_batch(games_data)
         results['opening_analysis'] = opening_results
-        logger.info(f"Opening classification complete")
-        
+        logger.info("Opening classification complete")
+
         # Step 5: Generate recommendations
         logger.info("Step 5: Generating recommendations...")
         recommendation_engine = RecommendationEngine(config)
@@ -152,55 +154,59 @@ def analyze_games_from_file(pgn_file_path: str) -> Dict[str, Any]:
             classified_moves, opening_results, mistake_stats
         )
         results['recommendations'] = recommendations
-        logger.info(f"Recommendations generated")
-        
+        logger.info("Recommendations generated")
+
         return results
-        
+
     except Exception as e:
-        logger.error(f"Error during analysis: {str(e)}")
-        return {"error": f"Analysis failed: {str(e)}"}
+        logger.error("Error during analysis: %s", str(e))
+        return {"error": "Analysis failed: %s" % str(e)}
+
 
 @app.route('/', methods=['GET'])
-def index():
+def index() -> Any:
     """Serve the main page."""
     return render_template_string(HTML_TEMPLATE)
 
+
 @app.route('/', methods=['POST'])
-def upload_file():
+def upload_file() -> Any:
     """Handle file upload and analysis."""
     if 'pgn_file' not in request.files:
         return jsonify({'error': 'No file uploaded'}), 400
-    
+
     file = request.files['pgn_file']
     if file.filename == '':
         return jsonify({'error': 'No file selected'}), 400
-    
+
     if not file.filename.lower().endswith('.pgn'):
         return jsonify({'error': 'Please upload a PGN file'}), 400
-    
+
     try:
         # Save uploaded file temporarily
         with tempfile.NamedTemporaryFile(delete=False, suffix='.pgn') as tmp_file:
             file.save(tmp_file.name)
             tmp_file_path = tmp_file.name
-        
+
         # Analyze the games
         results = analyze_games_from_file(tmp_file_path)
-        
+
         # Clean up temporary file
         os.unlink(tmp_file_path)
-        
+
         return jsonify(results)
-        
+
     except Exception as e:
-        logger.error(f"Error processing file: {str(e)}")
-        return jsonify({'error': f'Error processing file: {str(e)}'}), 500
+        logger.error("Error processing file: %s", str(e))
+        return jsonify({'error': f"Error processing file: {str(e)}"}), 500
+
 
 @app.route('/health')
-def health_check():
+def health_check() -> Any:
     """Health check endpoint for Railway."""
     return jsonify({'status': 'healthy', 'service': 'chess-recommender'})
 
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8000))
-    app.run(host='0.0.0.0', port=port, debug=False) 
+    app.run(host='0.0.0.0', port=port, debug=False)

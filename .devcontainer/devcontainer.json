@@ -11,7 +11,8 @@
                 "ms-python.flake8",
                 "ms-python.mypy-type-checker",
                 "ms-toolsai.jupyter",
-                "ms-python.pylint"
+                "ms-python.pylint",
+                "ms-python.debugpy"
             ],
             "settings": {
                 "python.defaultInterpreterPath": "/usr/bin/python3",
@@ -22,6 +23,9 @@
                 "python.testing.pytestEnabled": true,
                 "python.testing.pytestArgs": [
                     "tests"
+                ],
+                "python.analysis.extraPaths": [
+                    "/app"
                 ]
             }
         }

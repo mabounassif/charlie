@@ -2,7 +2,7 @@
 
 # Engine Settings
 engine:
-  stockfish_path: "/usr/local/bin/stockfish"  # Update this path
+  stockfish_path: "/usr/games/stockfish"  # Update this path
   evaluation_depth: 15
   time_limit: 1.0  # seconds per evaluation
 

@@ -3,12 +3,14 @@ PGN Parser for chess game analysis.
 Handles parsing of PGN files and extraction of game data.
 """
 
+from dataclasses import dataclass, field
+import logging
+from pathlib import Path
+import pickle
+from typing import Any, Dict, List, Optional
+
 import chess.pgn
 import pandas as pd
-from typing import List, Dict, Optional, Any
-from dataclasses import dataclass, field
-from pathlib import Path
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -65,10 +67,13 @@ class PGNParser:
         games: List[Game] = []
         game_count = 0
 
-        with open(pgn_path) as f:
+        with open(pgn_path, encoding="utf-8") as f:
             while True:
                 if game_count >= self.max_games:
-                    logger.info(f"Reached maximum games limit: {self.max_games}")
+                    logger.info(
+                        "Reached maximum games limit: %s",
+                        self.max_games
+                    )
                     break
 
                 game = chess.pgn.read_game(f)
@@ -80,10 +85,12 @@ class PGNParser:
                     games.append(parsed_game)
                     game_count += 1
 
-        logger.info(f"Parsed {len(games)} games from {pgn_path}")
+        logger.info("Parsed %s games from %s", len(games), pgn_path)
         return games
 
-    def _parse_single_game(self, pgn_game: Any, game_id: int) -> Optional[Game]:
+    def _parse_single_game(
+        self, pgn_game: Any, game_id: int
+    ) -> Optional[Game]:
         """Parse a single PGN game into our Game format."""
         try:
             # Extract game metadata
@@ -127,8 +134,8 @@ class PGNParser:
 
             return game
 
-        except Exception as e:
-            logger.warning(f"Failed to parse game {game_id}: {e}")
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.warning("Failed to parse game %s: %s", game_id, e)
             return None
 
     def games_to_dataframe(self, games: List[Game]) -> pd.DataFrame:
@@ -167,24 +174,25 @@ class PGNParser:
 
         return pd.DataFrame(all_moves)
 
-    def save_processed_games(self, games: List[Game], output_path: str) -> None:
+    def save_processed_games(
+        self, games: List[Game], output_path: str
+    ) -> None:
         """Save processed games to a pickle file for later use."""
-        import pickle
-
         output_file = Path(output_path)
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         with open(output_file, "wb") as f:
             pickle.dump(games, f)
 
-        logger.info(f"Saved {len(games)} processed games to {output_path}")
+        logger.info("Saved %s processed games to %s", len(games), output_path)
 
-    def load_processed_games(self, input_path: str) -> List[Game]:
+    def load_processed_games(
+        self, input_path: str
+    ) -> List[Game]:
         """Load processed games from a pickle file."""
-        import pickle
-
         with open(input_path, "rb") as f:
-            games = pickle.load(f)
+            games: List[Game] = pickle.load(f)
 
-        logger.info(f"Loaded {len(games)} processed games from {input_path}")
+        logger.info("Loaded %s processed games from %s",
+                    len(games), input_path)
         return games

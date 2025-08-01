@@ -13,7 +13,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "python-chess>=1.10.0",
-        "torch>=2.0.0",
+        # "torch>=2.0.0",
         "numpy>=1.24.0",
         "pandas>=2.0.0",
         "matplotlib>=3.7.0",
@@ -22,4 +22,4 @@ setup(
         "tqdm>=4.65.0",
     ],
     python_requires=">=3.8",
-) 
+)

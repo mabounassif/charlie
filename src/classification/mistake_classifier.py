@@ -18,7 +18,9 @@ class MistakeClassifier:
 
         # Validate thresholds
         if not all(
-            key in self.thresholds for key in ["blunder", "mistake", "inaccuracy", "ok"]
+            key in self.thresholds for key in [
+                "blunder", "mistake", "inaccuracy", "ok"
+            ]
         ):
             raise ValueError("Missing required mistake thresholds in config")
 
@@ -76,7 +78,9 @@ class MistakeClassifier:
 
         return classified_moves
 
-    def get_mistake_stats(self, moves_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def get_mistake_stats(
+        self, moves_data: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """
         Calculate statistics about mistakes in a dataset.
 

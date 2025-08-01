@@ -3,7 +3,7 @@ python-chess>=1.10.0
 chess>=1.11.2
 
 # Machine learning and data processing
-torch>=2.0.0
+# torch>=2.0.0
 numpy>=1.24.0
 pandas>=2.0.0
 scikit-learn>=1.3.0

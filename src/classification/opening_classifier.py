@@ -15,7 +15,8 @@ class OpeningClassifier:
 
     def __init__(self, config: Dict[str, Any]) -> None:
         self.config = config
-        # Simple opening database - in practice, you'd use a more comprehensive one
+        # Simple opening database - in practice, you'd use a more
+        # comprehensive one
         self.opening_database = self._load_opening_database()
 
     def _load_opening_database(self) -> Dict[str, str]:
@@ -105,8 +106,8 @@ class OpeningClassifier:
 
             return "Unknown Opening"
 
-        except Exception as e:
-            logger.warning(f"Failed to classify opening: {e}")
+        except KeyError as e:
+            logger.warning("Failed to classify opening: %s", e)
             return "Unknown Opening"
 
     def classify_game_openings(
